@@ -6,15 +6,13 @@ import numpy as np
 
 def generate_probabilities(pred_label, classes):
     """
-    Function to generate probabilities
-    # generate probabilities such the highest probability is the predicted class in y_label_pred
-    # make sure the highest probability is not 1.0
-    # make sure the sum of the probabilities is 1.0
-    # go up to the 4th decimal place
-    # store the probabilities in a list of lists
+    Function to generate probabilities.
 
-    :param pred_label:
-    :param classes:
+    Generate probabilities such the highest probability is the predicted class in pred_label.
+    The highest probability is not 1.0 and the sum of the probabilities is 1.0
+
+    :param pred_label: The predicted class
+    :param classes: List of classes
     :return:
     """
     # Initialize probabilities with small random values
@@ -26,20 +24,20 @@ def generate_probabilities(pred_label, classes):
     max_prob = np.random.uniform(0.5, 0.9)  # Ensure the highest probability is not 1.0
     probs[pred_idx] = max_prob
 
-    # Renormalize remaining probabilities to sum to 1 - max_prob
+    # re-normalize remaining probabilities to sum to 1 - max_prob
     other_indices = [i for i in range(len(classes)) if i != pred_idx]
     remaining_prob = 1 - max_prob
     remaining_probs = probs[other_indices]
     remaining_probs /= remaining_probs.sum()  # Normalize
     remaining_probs *= remaining_prob
 
-    # Insert the remaining probabilities back
+    # insert the remaining probabilities back
     probs[other_indices] = remaining_probs
 
-    # Round to the 4th decimal place
+    # round to the 4th decimal place
     probs = np.round(probs, 4)
 
-    # Ensure the sum is exactly 1.0 by adjusting the highest probability if needed
+    # ensure the sum is exactly 1.0 by adjusting the highest probability if needed
     probs[pred_idx] = 1.0 - np.round(probs[other_indices].sum(), 4)
 
     return probs.tolist()
@@ -59,5 +57,5 @@ def test_save_fold_info():
     out_path: str = "test"
     fold_nr: int = 1
 
-    ml_report = MLReport(y_true, y_label_pred, y_pred_probs, class_names, out_path, fold_nr)
-    ml_report.run()
+    ml_report = MLReport(y_true, y_label_pred, y_pred_probs, class_names)
+    ml_report.run(out_path, fold_nr)
