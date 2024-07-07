@@ -9,15 +9,16 @@ report = MLReport(y_true_label, y_pred_label, y_pred_prob, class_names)
 report.run(results_path="results")
 ```
 
-This will generate a complete report, containing the following:
+This will generate a classifier report, containing the following information:
 
-- A Classification Report with Precision, Recall, F1-Score, Support
-- Precision and Recall curves as a function of the threshold for each class
-- A Confusion Matrix
-- A `.csv` file with precision, recall, at different thresholds
-- A `.csv` file with predictions scores for each class for each sample
+- A classification report with precision, recall and F1.
+- A visualization of the precision and recall curves as a function of the threshold for each class.
+- A confusion matrix.
+- A `.csv` file with precision, recall, at different thresholds.
+- A `.csv` file with predictions scores for each class for each sample.
 
-All this information is saved in the `results` folder.
+All this information is saved in the `results` folder under different filenames, containing both
+images, `.csv` files, and a `.txt` file with the classification report.
 
 <p float="left">
   <img src="precision_recall_threshold.png" alt="Precision x Recall vs Threshold" style="width: 54%;"/>
@@ -53,7 +54,7 @@ comp.sys.ibm.pc.hardware       0.75      0.75      0.75       196
             weighted avg       0.86      0.86      0.86      3766
 ```
 
-## Running it on asklearn cross-fold classification
+## Example: running ML-Report-Toolkit on cross-fold classification
 
 Install the package and dependencies:
 
