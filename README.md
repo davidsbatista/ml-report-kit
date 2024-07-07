@@ -24,7 +24,7 @@ All this information is saved in the `results` folder.
   <br>
   <img src="confusion_matrix.png" alt="Confusion Matrix" style="width: 50%; height: 50%"/>
 
-```
+
                           precision    recall  f1-score   support
 
              alt.atheism       0.81      0.87      0.84       159
@@ -51,7 +51,7 @@ comp.sys.ibm.pc.hardware       0.75      0.75      0.75       196
                 accuracy                           0.86      3766
                macro avg       0.86      0.86      0.86      3766
             weighted avg       0.86      0.86      0.86      3766
-```
+
 </p>
 
 ## Example
