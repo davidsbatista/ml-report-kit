@@ -48,10 +48,9 @@ comp.sys.ibm.pc.hardware       0.75      0.75      0.75       196
 
 ```
 
-<!-- add image using markdown syntax -->
-![precision_recall_threshold](precision_recall_threshold.png)
-
-
+<img src="confusion_matrix.png" alt="Confusion Matrix" style="width: 50%; height: 50%"/>
+<br>
+<img src="precision_recall_threshold.png" alt="Precision x Recall vs Threshold" style="width: 50%; height: 50%"/>
 
 
 
