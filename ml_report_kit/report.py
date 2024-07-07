@@ -4,7 +4,7 @@ from typing import List, Optional
 import matplotlib.pyplot as plt
 from numpy import hstack, array
 from pandas import DataFrame
-from sklearn.metrics import classification_report, precision_recall_curve, confusion_matrix
+from sklearn.metrics import classification_report, precision_recall_curve, confusion_matrix, ConfusionMatrixDisplay
 
 
 class MLReport:
@@ -22,10 +22,16 @@ class MLReport:
         self.class_names = class_names
         self.y_id = y_id
 
+    def plot_confusion_matrix(self, cm, out_path: Path, xticks_rotation='vertical'):
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=self.class_names)
+        final_out = out_path.joinpath('confusion_matrix.png')
+        disp.plot(xticks_rotation=xticks_rotation).figure_.savefig(str(final_out))
+
     @staticmethod
     def print_cm(
         cm,
         labels,
+        print_reports,
         out_path: Path,
         hide_zeroes=False,
         hide_diagonal=False,
@@ -38,39 +44,43 @@ class MLReport:
         Taken from here: https://gist.github.com/zachguo/10296432
         """
 
-        column_width = max([len(x) for x in labels] + [5])  # 5 is value length
-        empty_cell = " " * column_width
+        if print_reports:
+            column_width = max([len(x) for x in labels] + [5])  # 5 is value length
+            empty_cell = " " * column_width
 
-        # Begin CHANGES
-        fst_empty_cell = (column_width - 3) // 2 * " " + "t/p" + (column_width - 3) // 2 * " "
+            # Begin CHANGES
+            fst_empty_cell = (column_width - 3) // 2 * " " + "t/p" + (column_width - 3) // 2 * " "
 
-        if len(fst_empty_cell) < len(empty_cell):
-            fst_empty_cell = " " * (len(empty_cell) - len(fst_empty_cell)) + fst_empty_cell
-        # Print header
-        print("    " + fst_empty_cell, end=" ")
-        # End CHANGES
+            if len(fst_empty_cell) < len(empty_cell):
+                fst_empty_cell = " " * (len(empty_cell) - len(fst_empty_cell)) + fst_empty_cell
+            # Print header
+            print("    " + fst_empty_cell, end=" ")
+            # End CHANGES
 
-        for label in labels:
-            print("%{0}s".format(column_width) % label, end=" ")
+            for label in labels:
+                print("%{0}s".format(column_width) % label, end=" ")
 
-        print()
-        # Print rows
-        for i, label1 in enumerate(labels):
-            print("    %{0}s".format(column_width) % label1, end=" ")
-            for j in range(len(labels)):
-                cell = "%{0}.1f".format(column_width) % cm[i, j]
-                if hide_zeroes:
-                    cell = cell if float(cm[i, j]) != 0 else empty_cell
-                if hide_diagonal:
-                    cell = cell if i != j else empty_cell
-                if hide_threshold:
-                    cell = cell if cm[i, j] > hide_threshold else empty_cell
-                print(cell, end=" ")
             print()
+            # Print rows
+            for i, label1 in enumerate(labels):
+                print("    %{0}s".format(column_width) % label1, end=" ")
+                for j in range(len(labels)):
+                    cell = "%{0}.1f".format(column_width) % cm[i, j]
+                    if hide_zeroes:
+                        cell = cell if float(cm[i, j]) != 0 else empty_cell
+                    if hide_diagonal:
+                        cell = cell if i != j else empty_cell
+                    if hide_threshold:
+                        cell = cell if cm[i, j] > hide_threshold else empty_cell
+                    print(cell, end=" ")
+                print()
 
         if save_to_file:
             # ToDo: this can be improved, remove the duplication of code
             # same as above, but output goes to a text file instead of stdout
+            column_width = max([len(x) for x in labels] + [5])  # 5 is value length
+            empty_cell = " " * column_width
+            fst_empty_cell = (column_width - 3) // 2 * " " + "t/p" + (column_width - 3) // 2 * " "
             out_file = out_path.joinpath(Path("confusion_matrix.txt"))
             with open(out_file, "wt") as f:
                 f.write("    " + fst_empty_cell + " ")
@@ -113,7 +123,7 @@ class MLReport:
         plt.savefig(f_out, bbox_inches="tight")
         plt.close()
 
-    def run(self, results_path: str, fold_nr: int = 0):
+    def run(self, results_path: str, fold_nr: int = 0, print_reports=False):
         """
         For a given fold inside a cross-validation training, reports the following:
 
@@ -128,8 +138,9 @@ class MLReport:
                            this parameter indicates the idx of the class we are interested in
         - 'pos_label': the label of the positive class
 
-        :param results_path:
-        :param fold_nr:
+        :param results_path: the path where to save the reports
+        :param fold_nr: the fold number
+        :param print_reports: if True, print the classification report
         :return:
         """
 
@@ -142,11 +153,14 @@ class MLReport:
         out_file = final_path.joinpath(Path(f"classification_report_{fold_nr}.txt"))
         with open(out_file, "wt", encoding="utf8") as f:
             print(report, file=f)
+        if print_reports:
+            print(report)
 
         # confusion matrix
         labels = sorted(list(set(self.y_true)))
         cm = confusion_matrix(self.y_true, self.y_label_pred, labels=labels)
-        self.print_cm(cm, labels, final_path)
+        self.print_cm(cm, labels, print_reports, final_path)
+        self.plot_confusion_matrix(cm, final_path)
 
         # precision and recall as a function of threshold value
         for idx in range(0, len(self.y_pred_probs[0])):

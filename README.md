@@ -2,7 +2,6 @@
 
 Generating evaluating metrics reports for machine learning models in two lines of code.
 
-
 ```python
 from ml_report import MLReport
 
@@ -17,6 +16,47 @@ This will generate a report for each fold, containing the following:
 - Precision and Recall curves as a function of the threshold for each class
 - A `.csv` file with precision, recall, at different thresholds
 - A `.csv` file with predictions scores for each class for each sample
+
+
+```
+                          precision    recall  f1-score   support
+
+             alt.atheism       0.81      0.87      0.84       159
+           comp.graphics       0.65      0.81      0.72       194
+ comp.os.ms-windows.misc       0.81      0.82      0.81       197
+comp.sys.ibm.pc.hardware       0.75      0.75      0.75       196
+   comp.sys.mac.hardware       0.86      0.78      0.82       193
+          comp.windows.x       0.81      0.81      0.81       198
+            misc.forsale       0.74      0.86      0.80       195
+               rec.autos       0.92      0.90      0.91       198
+         rec.motorcycles       0.95      0.96      0.95       199
+      rec.sport.baseball       0.94      0.92      0.93       198
+        rec.sport.hockey       0.96      0.97      0.96       200
+               sci.crypt       0.95      0.89      0.92       198
+         sci.electronics       0.85      0.81      0.83       196
+                 sci.med       0.90      0.90      0.90       198
+               sci.space       0.94      0.91      0.93       197
+  soc.religion.christian       0.90      0.92      0.91       199
+      talk.politics.guns       0.86      0.88      0.87       182
+   talk.politics.mideast       0.97      0.95      0.96       188
+      talk.politics.misc       0.86      0.82      0.84       155
+      talk.religion.misc       0.82      0.57      0.67       126
+
+                accuracy                           0.86      3766
+               macro avg       0.86      0.86      0.86      3766
+            weighted avg       0.86      0.86      0.86      3766
+
+```
+
+<!-- add image using markdown syntax -->
+![precision_recall_threshold](precision_recall_threshold.png)
+
+
+
+
+
+
+
 
 ## Example
 
@@ -43,12 +83,10 @@ dataset = fetch_20newsgroups(subset='all', shuffle=True, random_state=42)
 k_folds = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
 folds = {}
 
-# create folds
 for fold_nr, (train_index, test_index) in enumerate(k_folds.split(dataset.data, dataset.target)):
     x_train, x_test = np.array(dataset.data)[train_index], np.array(dataset.data)[test_index]
     y_train, y_test = np.array(dataset.target)[train_index], np.array(dataset.target)[test_index]
     folds[fold_nr] = {"x_train": x_train, "x_test": x_test, "y_train": y_train, "y_test": y_test}
-
 
 for fold_nr in folds.keys():
     clf = Pipeline([('tfidf', TfidfVectorizer()), ('clf', LogisticRegression(class_weight='balanced'))])
@@ -61,3 +99,9 @@ for fold_nr in folds.keys():
     report = MLReport(y_true_label, y_pred_label, y_pred_prob, dataset.target_names)
     report.generate_report()
 ```
+
+This will generate,for each fold, the reports and metrics mentioned above, in the `reports` folder.
+
+## License
+
+Apache License 2.0
