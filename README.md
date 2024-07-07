@@ -19,9 +19,8 @@ This will generate a complete report, containing the following:
 
 All this information is saved in the `results` folder.
 
-<p align="center">
+<p float="left">
   <img src="precision_recall_threshold.png" alt="Precision x Recall vs Threshold" style="width: 50%; height: 50%"/>
-  <br>
   <img src="confusion_matrix.png" alt="Confusion Matrix" style="width: 50%; height: 50%"/>
 </p>
 
