@@ -2,8 +2,8 @@ from pathlib import Path
 from typing import List, Optional
 
 import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
+from numpy import hstack, array
+from pandas import DataFrame
 from sklearn.metrics import classification_report, precision_recall_curve, confusion_matrix
 
 
@@ -14,16 +14,12 @@ class MLReport:
         y_label_pred: List[str],
         y_pred_probs: List[List[float]],
         class_names: List[str],
-        out_path: str,
-        fold_nr: int,
         y_id: Optional[List] = None,
     ):
         self.y_true = y_true
         self.y_label_pred = y_label_pred
         self.y_pred_probs = y_pred_probs
         self.class_names = class_names
-        self.out_path = Path(out_path)
-        self.fold_nr = fold_nr
         self.y_id = y_id
 
     @staticmethod
@@ -118,7 +114,7 @@ class MLReport:
         plt.savefig(f_out, bbox_inches="tight")
         plt.close()
 
-    def run(self, fold_nr: int = 0):
+    def run(self, results_path: str, fold_nr: int = 0):
         """
         For a given fold inside a cross-validation training, reports the following:
 
@@ -133,44 +129,48 @@ class MLReport:
                            this parameter indicates the idx of the class we are interested in
         - 'pos_label': the label of the positive class
 
+        :param results_path:
         :param fold_nr:
         :return:
         """
+
         # classification report
         report = classification_report(self.y_true, self.y_label_pred, zero_division=0.0)
-        self.out_path.mkdir(parents=True, exist_ok=True)
-        out_file = self.out_path.joinpath(Path(f"classification_report_{fold_nr}.txt"))
+        out_path = Path(results_path)
+        out_path.mkdir(parents=True, exist_ok=True)
+        out_file = out_path.joinpath(Path(f"classification_report_{fold_nr}.txt"))
         with open(out_file, "wt", encoding="utf8") as f:
             print(report, file=f)
 
         # confusion matrix
         labels = sorted(list(set(self.y_true)))
+        print(labels)
         cm = confusion_matrix(self.y_true, self.y_label_pred, labels=labels)
-        self.print_cm(cm, labels, self.out_path)
+        self.print_cm(cm, labels, out_path)
 
         # precision and recall as a function of threshold value
         for idx in range(0, len(self.y_pred_probs[0])):
             pos_class_prob = [y_prob_pred[idx] for y_prob_pred in self.y_pred_probs]
-            tmp = np.array([1 if sample == self.class_names[idx] else 0 for sample in self.y_true])
-            precisions, recalls, thresholds = precision_recall_curve(tmp, np.array(pos_class_prob))
+            tmp = array([1 if sample == self.class_names[idx] else 0 for sample in self.y_true])
+            precisions, recalls, thresholds = precision_recall_curve(tmp, array(pos_class_prob))
 
             # save precisions, recalls, thresholds - allows for threshold tuning based on precision and/or recall
-            df = pd.DataFrame(list(zip(precisions, recalls, thresholds)), columns=["precision", "recall", "thresholds"])
-            f_out = self.out_path.joinpath(Path(f"precision_recall_threshold_{self.class_names[idx]}.csv"))
+            df = DataFrame(list(zip(precisions, recalls, thresholds)), columns=["precision", "recall", "thresholds"])
+            f_out = out_path.joinpath(Path(f"precision_recall_threshold_{self.class_names[idx]}.csv"))
             df.to_csv(f_out, index=False)
 
             # generate the precision-recall vs threshold plot
-            f_out = self.out_path.joinpath(Path(f"precision_recall_threshold_{self.class_names[idx]}.png"))
+            f_out = out_path.joinpath(Path(f"precision_recall_threshold_{self.class_names[idx]}.png"))
             self.plot_curve(thresholds, precisions, recalls, f_out)
 
-        preds = np.array(self.y_pred_probs)
+        preds = array(self.y_pred_probs)
         if self.y_id:
-            np.hstack(np.array(self.y_id, self.y_true, self.preds))
+            hstack(array(self.y_id, self.y_true, self.preds))
         else:
-            preds_array = np.array(self.y_true).reshape(len(self.y_true), 1)
-            labels_array = np.array(self.y_label_pred).reshape(len(self.y_true), 1)
-            data = np.hstack((preds_array, labels_array, preds))
+            preds_array = array(self.y_true).reshape(len(self.y_true), 1)
+            labels_array = array(self.y_label_pred).reshape(len(self.y_true), 1)
+            data = hstack((preds_array, labels_array, preds))
             labels = ["true_y", "pred_label"] + self.class_names
 
-            df = pd.DataFrame(data, columns=labels)
-            df.to_csv(self.out_path.joinpath(Path(f"prediction_scores_{fold_nr}.csv", index=False)))
+            df = DataFrame(data, columns=labels)
+            df.to_csv(out_path.joinpath(Path(f"prediction_scores_{fold_nr}.csv", index=False)))
