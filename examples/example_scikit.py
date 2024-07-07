@@ -5,14 +5,14 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import Pipeline
 
-from ml_report_kit.ml_report_kit import MLReport
+from ml_report_kit import MLReport
 
 
 def main():
-    dataset = fetch_20newsgroups(subset='all', shuffle=True, random_state=42)   # multi-class text classification
+    dataset = fetch_20newsgroups(subset='test', shuffle=True, random_state=42)   # multi-class text classification
 
     # split the dataset into 3 folds
-    k_folds = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
+    k_folds = StratifiedKFold(n_splits=2, shuffle=True, random_state=42)
     folds = {}
     for fold_nr, (train_index, test_index) in enumerate(k_folds.split(dataset.data, dataset.target)):
         x_train, x_test = np.array(dataset.data)[train_index], np.array(dataset.data)[test_index]
@@ -25,7 +25,6 @@ def main():
         clf.fit(folds[fold_nr]["x_train"], folds[fold_nr]["y_train"])
         y_pred = clf.predict(folds[fold_nr]["x_test"])
         y_pred_prob = clf.predict_proba(folds[fold_nr]["x_test"])
-
         y_true_label = [dataset.target_names[sample] for sample in folds[fold_nr]["y_test"]]
         y_pred_label = [dataset.target_names[sample] for sample in y_pred]
 

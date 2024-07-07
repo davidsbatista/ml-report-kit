@@ -1,7 +1,7 @@
 [project]
 name = "ml-report-kit"
-version = "0.1.0"
-description = "Generating evaluating metrics reports for machine learning models in one line of code."
+version = "0.1.1"
+description = "Generating evaluating metrics reports for machine learning models in two lines of code."
 authors = [
     {name = "David S. Batista", email = "dsbatista@gmail.com"},
 ]
@@ -22,4 +22,4 @@ build-backend = "hatchling.build"
 Homepage = "https://github.com/davidsbatista/ml-report-kit"
 
 [tool.hatch.build.targets.sdist]
-include = ["/ml_report_kit", "/VERSION.txt"]
+include = ["/ml_report_kit"]
