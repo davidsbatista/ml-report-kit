@@ -1,4 +1,4 @@
-from src.ml_report_kit import MLReport
+from ml_report_kit.ml_report_kit import MLReport
 
 import random
 import numpy as np
