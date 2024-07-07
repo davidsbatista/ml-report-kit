@@ -23,7 +23,6 @@ All this information is saved in the `results` folder.
   <img src="precision_recall_threshold.png" alt="Precision x Recall vs Threshold" style="width: 50%; height: 50%"/>
   <br>
   <img src="confusion_matrix.png" alt="Confusion Matrix" style="width: 50%; height: 50%"/>
-</p>
 
 ```
                           precision    recall  f1-score   support
@@ -53,7 +52,7 @@ comp.sys.ibm.pc.hardware       0.75      0.75      0.75       196
                macro avg       0.86      0.86      0.86      3766
             weighted avg       0.86      0.86      0.86      3766
 ```
-</center>
+</p>
 
 ## Example
 
