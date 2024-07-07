@@ -151,7 +151,7 @@ class MLReport:
         fold_nr = Path(str(f"fold_{fold_nr}"))
         final_path = out_path.joinpath(fold_nr)
         final_path.mkdir(parents=True, exist_ok=True)
-        out_file = final_path.joinpath(Path(f"classification_report_{fold_nr}.txt"))
+        out_file = final_path.joinpath(Path(f"classification_report.txt"))
         with open(out_file, "wt", encoding="utf8") as f:
             print(report, file=f)
         if print_reports:
@@ -189,4 +189,4 @@ class MLReport:
             labels = ["true_y", "pred_label"] + self.class_names
 
             df = DataFrame(data, columns=labels)
-            df.to_csv(final_path.joinpath(Path(f"prediction_scores_{fold_nr}.csv", index=False)))
+            df.to_csv(final_path.joinpath(Path(f"prediction_scores.csv", index=False)))

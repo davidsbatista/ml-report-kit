@@ -12,7 +12,7 @@ def main():
     dataset = fetch_20newsgroups(subset='test', shuffle=True, random_state=42)   # multi-class text classification
 
     # split the dataset into 3 folds
-    k_folds = StratifiedKFold(n_splits=2, shuffle=True, random_state=42)
+    k_folds = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
     folds = {}
     for fold_nr, (train_index, test_index) in enumerate(k_folds.split(dataset.data, dataset.target)):
         x_train, x_test = np.array(dataset.data)[train_index], np.array(dataset.data)[test_index]

@@ -93,10 +93,18 @@ for fold_nr in folds.keys():
     y_pred_label = [dataset.target_names[sample] for sample in y_pred]
     
     report = MLReport(y_true_label, y_pred_label, y_pred_prob, dataset.target_names)
-    report.generate_report()
+    report.run(results_path="results", fold_nr=fold_nr)
 ```
 
-This will generate, for each fold, the reports and metrics mentioned above, in the `reports` folder.
+This will generate, for each fold, the reports and metrics mentioned above, in the `reports` folder.  For each fold there will be the following files:
+- `classification_report.txt`
+- `confusion_matrix.png`
+- `confusion_matrix.txt`
+- `predictions_scores.csv`
+- For each class:
+  - `precision_recall_threshold_<class_name>.csv`
+  - `precision_recall_threshold_<class_name>.png`
+
 
 ## License
 
