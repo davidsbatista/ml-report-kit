@@ -25,7 +25,8 @@ class MLReport:
     def plot_confusion_matrix(self, cm, out_path: Path, xticks_rotation='vertical'):
         disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=self.class_names)
         final_out = out_path.joinpath('confusion_matrix.png')
-        disp.plot(xticks_rotation=xticks_rotation).figure_.savefig(str(final_out))
+        fig, ax = plt.subplots(figsize=(10, 10))
+        disp.plot(xticks_rotation=xticks_rotation, ax=ax).figure_.savefig(str(final_out))
 
     @staticmethod
     def print_cm(

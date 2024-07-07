@@ -6,17 +6,23 @@ Generating evaluating metrics reports for machine learning models in two lines o
 from ml_report import MLReport
 
 report = MLReport(y_true_label, y_pred_label, y_pred_prob, class_names)
-report.generate_report()
+report.run(results_path="results")
 ```
 
-This will generate a report for each fold, containing the following:
+This will generate a complete report, containing the following:
 
 - A Classification Report with Precision, Recall, F1-Score, Support
-- A Confusion Matrix
 - Precision and Recall curves as a function of the threshold for each class
+- A Confusion Matrix
 - A `.csv` file with precision, recall, at different thresholds
 - A `.csv` file with predictions scores for each class for each sample
 
+All this information is saved in the `results` folder.
+
+<center>
+<img src="precision_recall_threshold.png" alt="Precision x Recall vs Threshold" style="width: 50%; height: 50%"/>
+<br>
+<img src="confusion_matrix.png" alt="Confusion Matrix" style="width: 50%; height: 50%"/>
 
 ```
                           precision    recall  f1-score   support
@@ -45,17 +51,8 @@ comp.sys.ibm.pc.hardware       0.75      0.75      0.75       196
                 accuracy                           0.86      3766
                macro avg       0.86      0.86      0.86      3766
             weighted avg       0.86      0.86      0.86      3766
-
 ```
-
-<img src="confusion_matrix.png" alt="Confusion Matrix" style="width: 50%; height: 50%"/>
-<br>
-<img src="precision_recall_threshold.png" alt="Precision x Recall vs Threshold" style="width: 50%; height: 50%"/>
-
-
-
-
-
+</center>
 
 ## Example
 
@@ -99,7 +96,7 @@ for fold_nr in folds.keys():
     report.generate_report()
 ```
 
-This will generate,for each fold, the reports and metrics mentioned above, in the `reports` folder.
+This will generate, for each fold, the reports and metrics mentioned above, in the `reports` folder.
 
 ## License
 
