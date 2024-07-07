@@ -23,8 +23,9 @@ All this information is saved in the `results` folder.
   <img src="precision_recall_threshold.png" alt="Precision x Recall vs Threshold" style="width: 50%; height: 50%"/>
   <br>
   <img src="confusion_matrix.png" alt="Confusion Matrix" style="width: 50%; height: 50%"/>
+</p>
 
-
+```
                           precision    recall  f1-score   support
 
              alt.atheism       0.81      0.87      0.84       159
@@ -51,10 +52,9 @@ comp.sys.ibm.pc.hardware       0.75      0.75      0.75       196
                 accuracy                           0.86      3766
                macro avg       0.86      0.86      0.86      3766
             weighted avg       0.86      0.86      0.86      3766
+```
 
-</p>
-
-## Example
+## Running it on asklearn cross-fold classification
 
 Install the package and dependencies:
 
