@@ -66,14 +66,13 @@ pip install scikit-learn
 Run the following code:
 
 ```python
-    
+import numpy as np
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-
-from ml_report import MLReport
+from ml_report_kit import MLReport
 
 dataset = fetch_20newsgroups(subset='all', shuffle=True, random_state=42)
 k_folds = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
