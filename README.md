@@ -1,6 +1,6 @@
 # Machine Learning Report Toolkit
 
-Generating evaluating metrics reports for machine learning models in two lines of code.
+A plug-in to generate various evaluation metrics and reports ( PR-curves, classifications reports, confusion matrix) for supervised machine learning models using only two lines of code.
 
 ```python
 from ml_report import MLReport
