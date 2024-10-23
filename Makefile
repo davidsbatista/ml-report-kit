@@ -5,14 +5,14 @@ clean:
 	rm -rf build dist *.egg-info .coverage .pytest_cache .mypy_cache .pytest_cache src/*.egg-info
 
 publish_tmp:
-	python -m pip install --upgrade build
+	uv pip install -U build	# upgrade build
 	python -m build
-	python -m pip install --upgrade twine
-	python -m twine upload --repository testpypi dist/*
+	uv pip install -U twine # upgrade twine
+	python -m twine upload --verbose --repository testpypi dist/*
 
 
 publish_prod:
-	python -m pip install --upgrade build
+	uv pip install -U build # upgrade build
 	python -m build
-	python -m pip install --upgrade twine
-	python -m twine upload --repository pypi dist/*
+	uv pip install -U twine # upgrade twine
+	python -m twine upload --verbose --repository pypi dist/*
