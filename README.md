@@ -84,6 +84,10 @@ for fold_nr, (train_index, test_index) in enumerate(k_folds.split(dataset.data, 
     y_train, y_test = np.array(dataset.target)[train_index], np.array(dataset.target)[test_index]
     folds[fold_nr] = {"x_train": x_train, "x_test": x_test, "y_train": y_train, "y_test": y_test}
 
+all_y_true_label = []
+all_y_pred_label = []
+all_y_pred_prob = []
+
 for fold_nr in folds.keys():
     clf = Pipeline([('tfidf', TfidfVectorizer()), ('clf', LogisticRegression(class_weight='balanced'))])
     clf.fit(folds[fold_nr]["x_train"], folds[fold_nr]["y_train"])
@@ -92,8 +96,18 @@ for fold_nr in folds.keys():
     y_true_label = [dataset.target_names[sample] for sample in folds[fold_nr]["y_test"]]
     y_pred_label = [dataset.target_names[sample] for sample in y_pred]
     
+    # accumulate the results for all folds to generate a report for the entire dataset
+    all_y_true_label.extend(y_true_label)
+    all_y_pred_label.extend(y_pred_label)
+    all_y_pred_prob.extend(list(y_pred_prob))
+    
+    # generate the report for the current fold
     report = MLReport(y_true_label, y_pred_label, y_pred_prob, dataset.target_names)
     report.run(results_path="results", fold_nr=fold_nr)
+
+# generate the report for the entire dataset
+ml_report = MLReport(all_y_true_label, all_y_pred_label, list(all_y_pred_prob), dataset.target_names, y_id=None)
+ml_report.run(results_path="results", final_report=True)
 ```
 
 This will generate, for each fold, the reports and metrics mentioned above, in the `reports` folder.  For each fold there will be the following files:
