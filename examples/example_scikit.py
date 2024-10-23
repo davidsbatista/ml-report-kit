@@ -1,3 +1,5 @@
+from ftplib import all_errors
+
 import numpy as np
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -19,6 +21,10 @@ def main():
         y_train, y_test = np.array(dataset.target)[train_index], np.array(dataset.target)[test_index]
         folds[fold_nr] = {"x_train": x_train, "x_test": x_test, "y_train": y_train, "y_test": y_test}
 
+    all_y_true_label = []
+    all_y_pred_label = []
+    all_y_pred_prob = []
+
     # train a classifier and generate a report for each fold
     for fold_nr in folds.keys():
         clf = Pipeline([('tfidf', TfidfVectorizer()), ('clf', LogisticRegression(class_weight='balanced'))])
@@ -28,9 +34,18 @@ def main():
         y_true_label = [dataset.target_names[sample] for sample in folds[fold_nr]["y_test"]]
         y_pred_label = [dataset.target_names[sample] for sample in y_pred]
 
+        # accumulate the results for all folds to generate a report for the entire dataset
+        all_y_true_label.extend(y_true_label)
+        all_y_pred_label.extend(y_pred_label)
+        all_y_pred_prob.extend(list(y_pred_prob))
+
         # generate the report for the current fold
         ml_report = MLReport(y_true_label, y_pred_label, list(y_pred_prob), dataset.target_names, y_id=None)
         ml_report.run(results_path="results", fold_nr=fold_nr)
+
+    # generate the report for the entire dataset
+    ml_report = MLReport(all_y_true_label, all_y_pred_label, list(all_y_pred_prob), dataset.target_names, y_id=None)
+    ml_report.run(results_path="results", final_report=True)
 
 
 if __name__ == "__main__":
