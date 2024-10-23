@@ -110,14 +110,15 @@ ml_report = MLReport(all_y_true_label, all_y_pred_label, list(all_y_pred_prob), 
 ml_report.run(results_path="results", final_report=True)
 ```
 
-This will generate, for each fold, the reports and metrics mentioned above, in the `reports` folder.  For each fold there will be the following files:
+This will generate, for each fold and the aggregated folders, the reports and metrics mentioned above. This information is saved
+in the `results` folder. For each fold and the aggregated folders, the following files are generated:
+ 
 - `classification_report.txt`
 - `confusion_matrix.png`
 - `confusion_matrix.txt`
 - `predictions_scores.csv`
-- For each class:
-  - `precision_recall_threshold_<class_name>.csv`
-  - `precision_recall_threshold_<class_name>.png`
+- `precision_recall_threshold_<class_name>.csv` # for each class in the dataset
+- `precision_recall_threshold_<class_name>.png` # for each class in the dataset
 
 
 ## License
