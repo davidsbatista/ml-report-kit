@@ -124,7 +124,7 @@ class MLReport:
         plt.savefig(f_out, bbox_inches="tight")
         plt.close()
 
-    def run(self, results_path: str, fold_nr: int = 0, print_reports=False):
+    def run(self, results_path: str, fold_nr: int = 0, final_report=False, print_reports=False):
         """
         For a given fold inside a cross-validation training, reports the following:
 
@@ -141,7 +141,8 @@ class MLReport:
 
         :param results_path: the path where to save the reports
         :param fold_nr: the fold number
-        :param print_reports: if True, print the classification report
+        :param print_reports: if True, print the classification report to the console
+        :param final_report: if True, it ignores the fold_nr saves the results in "final_report" folder
         :return:
         """
 
@@ -149,7 +150,7 @@ class MLReport:
         report = classification_report(self.y_true, self.y_label_pred, zero_division=0.0)
         out_path = Path(results_path)
         fold_nr = Path(str(f"fold_{fold_nr}"))
-        final_path = out_path.joinpath(fold_nr)
+        final_path = out_path.joinpath(fold_nr) if not final_report else out_path.joinpath("final_report")
         final_path.mkdir(parents=True, exist_ok=True)
         out_file = final_path.joinpath(Path(f"classification_report.txt"))
         with open(out_file, "wt", encoding="utf8") as f:
