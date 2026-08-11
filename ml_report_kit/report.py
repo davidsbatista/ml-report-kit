@@ -22,11 +22,16 @@ class MLReport:
         self.class_names = class_names
         self.y_id = y_id
 
-    def plot_confusion_matrix(self, cm, out_path: Path, xticks_rotation='vertical'):
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=self.class_names)
+    def plot_confusion_matrix(self, cm, labels: List[str], out_path: Path, xticks_rotation='vertical'):
+        # `labels`, not self.class_names: the matrix is built from the labels present in y_true, and
+        # a fold that happens to carry no sample of a rare class produces a smaller matrix than the
+        # full class list. Passing class_names then fails with "The number of FixedLocator locations
+        # does not match the number of labels".
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
         final_out = out_path.joinpath('confusion_matrix.png')
         fig, ax = plt.subplots(figsize=(10, 10))
         disp.plot(xticks_rotation=xticks_rotation, ax=ax).figure_.savefig(str(final_out))
+        plt.close(fig)
 
     @staticmethod
     def print_cm(
@@ -162,7 +167,7 @@ class MLReport:
         labels = sorted(list(set(self.y_true)))
         cm = confusion_matrix(self.y_true, self.y_label_pred, labels=labels)
         self.print_cm(cm, labels, print_reports, final_path)
-        self.plot_confusion_matrix(cm, final_path)
+        self.plot_confusion_matrix(cm, labels, final_path)
 
         # precision and recall as a function of threshold value
         for idx in range(0, len(self.y_pred_probs[0])):
@@ -179,15 +184,18 @@ class MLReport:
             f_out = final_path.joinpath(Path(f"precision_recall_threshold_{self.class_names[idx]}.png"))
             self.plot_curve(thresholds, precisions, recalls, f_out)
 
-        preds = array(self.y_pred_probs)
+        # one row per sample: the true label, the predicted one, and the probability of every class.
+        # With y_id the identifier leads each row, which is what allows these predictions to be
+        # joined back to whatever they were computed from.
+        columns = [
+            array(self.y_true).reshape(-1, 1),
+            array(self.y_label_pred).reshape(-1, 1),
+            array(self.y_pred_probs),
+        ]
+        header = ["true_y", "pred_label"] + self.class_names
         if self.y_id:
-            # ToDo: do this without using hstack, to remove one dependency
-            hstack(array(self.y_id, self.y_true, self.preds))
-        else:
-            preds_array = array(self.y_true).reshape(len(self.y_true), 1)
-            labels_array = array(self.y_label_pred).reshape(len(self.y_true), 1)
-            data = hstack((preds_array, labels_array, preds))
-            labels = ["true_y", "pred_label"] + self.class_names
+            columns.insert(0, array(self.y_id).reshape(-1, 1))
+            header.insert(0, "id")
 
-            df = DataFrame(data, columns=labels)
-            df.to_csv(final_path.joinpath(Path(f"prediction_scores.csv", index=False)))
+        df = DataFrame(hstack(columns), columns=header)
+        df.to_csv(final_path.joinpath("prediction_scores.csv"), index=False)
